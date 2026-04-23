@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#d4af37">
+    <title>St Barber</title>
+    <style>
+        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #1a1a1a; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: var(--dark); color: #fff; margin: 0; padding: 20px; padding-bottom: 220px; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 2px solid var(--gold); margin-bottom: 20px; }
+        h1 { color: var(--gold); text-transform: uppercase; letter-spacing: 4px; margin: 0; font-size: 1.8rem; }
+        .fidelidad-card { background: linear-gradient(45deg, #d4af37, #b8860b); color: #000; padding: 12px; border-radius: 12px; font-weight: bold; margin-bottom: 20px; text-align: center; font-size: 0.85rem; }
+        
+        .servicio-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; cursor: pointer; }
+        .servicio-row.selected { border: 1px solid var(--gold); background: #222; }
+        .precio { color: var(--gold); font-weight: bold; }
+        
+        .selector-turno { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .input-turno { background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; font-size: 0.9rem; outline: none; -webkit-appearance: none; }
+        .input-turno:focus { border-color: var(--gold); }
+
+        .footer-fix { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; padding: 20px; box-sizing: border-box; border-top: 1px solid #d4af37; }
+        .total-text { font-size: 1.4rem; margin-bottom: 10px; text-align: center; color: var(--gold); font-weight: bold; }
+        .btn-ws { background: #25d366; color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; text-decoration: none; display: block; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+	<div style="text-align:center; margin-top:20px;">
+   <img src="logo1.jpg"
+        style="
+        max-width:350px;
+        width:90%;
+        border-radius:18px;
+        box-shadow:0 0 25px rgba(212,175,55,.4);">
+</div>
+	
+        <h1>St Barber</h1>
+        <div style="color: var(--gold); font-size: 0.7rem; letter-spacing: 2px;">BARBER SHOP</div>
+    </div>
+
+    <div class="fidelidad-card">
+        CLUB St Barber<br>
+        4to Corte: 50% OFF | 8vo Corte: 100% GRATIS!
+    </div>
+
+    <div id="lista-servicios">
+        <div class="servicio-row" onclick="toggleS(this)">
+            <div class="info"><span>Corte</span><br><span class="precio">$8.000</span></div>
+            <input type="checkbox" value="15000" data-name="Corte" style="display:none">
+        </div>
+        
+    </div>
+
+    <div class="selector-turno">
+        <input type="date" id="fecha" class="input-turno">
+        <input type="time" id="hora" class="input-turno">
+    </div>
+
+    <div class="footer-fix">
+        <div class="total-text" id="totalDisplay">Total: $0</div>
+        <button class="btn-ws" onclick="enviarWS()">RESERVAR TURNO</button>
+    </div>
+
+    <script>
+        function toggleS(row) {
+            const cb = row.querySelector('input');
+            cb.checked = !cb.checked;
+            row.classList.toggle('selected');
+            actualizarTotal();
+        }
+
+        function actualizarTotal() {
+            let total = 0;
+            document.querySelectorAll('input:checked').forEach(i => total += parseInt(i.value));
+            document.getElementById('totalDisplay').innerText = "Total: $" + total.toLocaleString('es-AR');
+        }
+
+        function enviarWS() {
+            let servicios = [];
+            document.querySelectorAll('input:checked').forEach(i => {
+                let nombre = i.getAttribute('data-name').replace('&ntilde;', 'n');
+                servicios.push(nombre);
+            });
+            
+            const fechaVal = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const total = document.getElementById('totalDisplay').innerText;
+
+            if(servicios.length === 0) return alert("Selecciona un servicio");
+            if(!fechaVal || !hora) return alert("Por favor, selecciona fecha y hora");
+
+            const partes = fechaVal.split('-');
+            const fechaFormateada = partes[2] + '/' + partes[1];
+
+            const miNumero = "5491126471697";
+            
+            const mensaje = "Hola St Barber! Quiero un turno.\n\n" +
+                            "Servicios: " + servicios.join(", ") + "\n" +
+                            "Fecha: " + fechaFormateada + "\n" +
+                            "Hora: " + hora + " hs\n" +
+                            total;
+            
+            window.open("https://wa.me/" + miNumero + "?text=" + encodeURIComponent(mensaje), "_blank");
+        }
+    </script>
+</body>
+</html>
